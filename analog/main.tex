@@ -1,0 +1,128 @@
+% Preamble templated from Mihir-Divyansh/Course-Setup
+%iffalse
+\let\negmedspace\undefined
+\let\negthickspace\undefined
+\documentclass[journal,12pt,onecolumn]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{txfonts}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{gensymb}
+\usepackage{comment}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{tkz-euclide}
+\usepackage{listings}
+\usepackage{gvv}
+%\def\inputGnumericTable{}
+\usepackage[latin1]{inputenc}
+\usepackage{color}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{ifthen}
+\usepackage{lscape}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multicol}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}[section]
+\newtheorem{definition}[problem]{Definition}
+\newcommand{\BEQA}{\begin{eqnarray}}
+\newcommand{\EEQA}{\end{eqnarray}}
+%\newcommand{\define}{\stackrel{\triangle}{=}}
+\theoremstyle{remark}
+%\newtheorem{rem}{Remark}
+
+% Marks the beginning of the document
+\begin{document}
+\bibliographystyle{IEEEtran}
+\vspace{3cm}
+
+\title{Signal Processing: Fourier Transform Time Delay}
+\author{EE25BTECH11055 - Subhodeep Chakraborty}
+\maketitle
+\hrulefill
+\bigskip
+
+\renewcommand{\thefigure}{\theenumi}
+\renewcommand{\thetable}{\theenumi}
+
+\textbf{Question:}\par
+Let the signal $x(t)$ have the Fourier transform $X(\omega)$. Consider the signal $y(t) = x(t-t_a)$ where $t_a$ is an arbitrary delay. The magnitude of the Fourier transform of $y(t)$ is:
+\begin{enumerate}[label=\alph*)]
+    \item $|X(\omega) \cdot [\omega]|$
+    \item $|X(\omega)| \cdot \omega$
+    \item $\omega^2 \cdot |X(\omega)|$
+    \item $|X(\omega) \cdot e^{-j\omega t_a}|$
+\end{enumerate}
+
+\textbf{Solution:}\par
+
+Let $x(t)$ be mapped to the frequency domain via the \textbf{Continuous Fourier Transform Operator} $\mathcal{F}$, such that $X(\omega) = \mathcal{F}\{x(t)\}$.
+
+We are given a time-shifted signal $y(t) = x(t - t_a)$. According to the \textbf{Time-Shifting Theorem of the Fourier Transform}, a delay in the time domain corresponds to a phase rotation in the frequency domain.
+
+To formalize this using linear algebra, we can represent the continuous frequency spectrum at discrete frequency bins $\omega_k$ as a column vector $\mathbf{X}$. The time-shift operation acts as a \textbf{Linear Transformation} mapping input spectrum $\mathbf{X}$ to output spectrum $\mathbf{Y}$. Because the complex exponentials are eigenfunctions of Linear Time-Invariant (LTI) systems, this transformation is represented by a diagonal \textbf{Phase-Shift Matrix} $\mathbf{\Phi}$:
+
+\begin{align}
+    \mathbf{Y} &= \mathbf{\Phi} \mathbf{X}
+\end{align}
+
+Expanding this matrix equation yields:
+\begin{align}
+    \begin{bmatrix} Y(\omega_1) \\ Y(\omega_2) \\ \vdots \\ Y(\omega_k) \end{bmatrix}
+    &=
+    \begin{bmatrix}
+    e^{-j\omega_1 t_a} & 0 & \dots & 0 \\
+    0 & e^{-j\omega_2 t_a} & \dots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \dots & e^{-j\omega_k t_a}
+    \end{bmatrix}
+    \begin{bmatrix} X(\omega_1) \\ X(\omega_2) \\ \vdots \\ X(\omega_k) \end{bmatrix}
+\end{align}
+
+To find the magnitude of the resulting spectrum $|\mathbf{Y}|$, we take the element-wise absolute value. For any arbitrary frequency component $\omega$, the operation simplifies to:
+\begin{align}
+    |Y(\omega)| &= |X(\omega) \cdot e^{-j\omega t_a}| \\
+    |Y(\omega)| &= |X(\omega)| \cdot |e^{-j\omega t_a}| \label{eq:magnitude_split}
+\end{align}
+
+To evaluate the magnitude of the complex exponential operator $|e^{-j\omega t_a}|$, we apply \textbf{Euler's Formula} ($e^{j\theta} = \cos\theta + j\sin\theta$) to express it in rectangular coordinates:
+\begin{align}
+    |e^{-j\omega t_a}| &= |\cos(-\omega t_a) + j\sin(-\omega t_a)|
+\end{align}
+
+Applying the \textbf{Pythagorean Trigonometric Identity} ($\cos^2\theta + \sin^2\theta = 1$) to find the modulus of this complex number:
+\begin{align}
+    |e^{-j\omega t_a}| &= \sqrt{\cos^2(-\omega t_a) + \sin^2(-\omega t_a)} = \sqrt{1} = 1
+\end{align}
+
+Substituting this unity magnitude back into Equation \eqref{eq:magnitude_split} gives:
+\begin{align}
+    |Y(\omega)| &= |X(\omega)| \cdot 1 \\
+    |Y(\omega)| &= |X(\omega)|
+\end{align}
+
+Looking at the given options, option (d) represents the direct mathematical equivalence before simplification:
+\begin{align}
+    |X(\omega) \cdot e^{-j\omega t_a}| &= |X(\omega)| \cdot |e^{-j\omega t_a}| = |X(\omega)|
+\end{align}
+
+Therefore, the magnitude of the signal's frequency spectrum is entirely invariant to linear time delays. The correct choice is \textbf{(d)}.
+
+\end{document}
