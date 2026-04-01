@@ -1,0 +1,181 @@
+% Preamble templated from Mihir-Divyansh/Course-Setup
+%iffalse
+\let\negmedspace\undefined
+\let\negthickspace\undefined
+\documentclass[journal,12pt,onecolumn]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{txfonts}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{gensymb}
+\usepackage{comment}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{tkz-euclide}
+\usepackage{listings}
+\usepackage{gvv} % Commented out to prevent compilation errors if custom package is missing
+%\def\inputGnumericTable{}
+\usepackage[latin1]{inputenc}
+\usepackage{color}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{ifthen}
+\usepackage{lscape}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multicol}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}[section]
+\newtheorem{definition}[problem]{Definition}
+\newcommand{\BEQA}{\begin{eqnarray}}
+\newcommand{\EEQA}{\end{eqnarray}}
+%\newcommand{\define}{\stackrel{\triangle}{=}}
+\theoremstyle{remark}
+%\newtheorem{rem}{Remark}
+
+% Marks the beginning of the document
+\begin{document}
+\bibliographystyle{IEEEtran}
+\vspace{3cm}
+
+\title{Signal Processing: Fourier Transform Time Delay}
+\author{EE25BTECH11055 - Subhodeep Chakraborty}
+\maketitle
+\hrulefill
+\bigskip
+
+\renewcommand{\thefigure}{\theenumi}
+\renewcommand{\thetable}{\theenumi}
+
+\section{Part A: Transfer Function via Modal Analysis (Spectral Decomposition)}
+
+In continuous-time signal processing, finding the transfer function $G(s)$ from a state-space model is equivalent to finding the system's parallel realization. We can achieve this through Modal Analysis, which relies on the eigenvalues and eigenvectors of the system matrix $\mathbf{A}$.
+
+Given the state-space matrices:
+\begin{align*}
+\mathbf{A} &= \begin{pmatrix} 0 & 1 \\ 0 & -2 \end{pmatrix}, \quad \mathbf{B} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}, \quad \mathbf{C} = \begin{pmatrix} 1 & 0 \end{pmatrix}
+\end{align*}
+
+\subsection{Eigenvalue Decomposition}
+First, we find the eigenvalues ($\lambda$) by solving the characteristic equation $\det(\lambda\mathbf{I} - \mathbf{A}) = 0$:
+\begin{align*}
+\det \begin{pmatrix} \lambda & -1 \\ 0 & \lambda + 2 \end{pmatrix} &= \lambda(\lambda + 2) = 0
+\end{align*}
+The poles of the system are $\lambda_1 = 0$ and $\lambda_2 = -2$.
+
+Next, we find the corresponding eigenvectors to form the modal matrix $\mathbf{V}$:
+\begin{itemize}
+    \item For $\lambda_1 = 0$: 
+    $\begin{pmatrix} 0 & -1 \\ 0 & 2 \end{pmatrix} \mathbf{v}_1 = \mathbf{0} \implies \mathbf{v}_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$
+    
+    \item For $\lambda_2 = -2$: 
+    $\begin{pmatrix} -2 & -1 \\ 0 & 0 \end{pmatrix} \mathbf{v}_2 = \mathbf{0} \implies \mathbf{v}_2 = \begin{pmatrix} 1 \\ -2 \end{pmatrix}$
+\end{itemize}
+
+The modal matrix $\mathbf{V}$ and its inverse $\mathbf{V}^{-1}$ are:
+\begin{align*}
+\mathbf{V} = \begin{pmatrix} 1 & 1 \\ 0 & -2 \end{pmatrix}, \quad \mathbf{V}^{-1} = \frac{1}{-2} \begin{pmatrix} -2 & -1 \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} 1 & 0.5 \\ 0 & -0.5 \end{pmatrix}
+\end{align*}
+
+\subsection{Diagonalization and Parallel Realization}
+By applying the similarity transformation $\mathbf{x} = \mathbf{V}\mathbf{z}$, we decouple the state equations into a diagonal matrix $\mathbf{\Lambda}$:
+\begin{align*}
+\mathbf{\Lambda} = \mathbf{V}^{-1}\mathbf{A}\mathbf{V} = \begin{pmatrix} 0 & 0 \\ 0 & -2 \end{pmatrix}
+\end{align*}
+
+The new modal input and output matrices are:
+\begin{align*}
+\mathbf{B}_m &= \mathbf{V}^{-1}\mathbf{B} = \begin{pmatrix} 1 & 0.5 \\ 0 & -0.5 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 0.5 \\ -0.5 \end{pmatrix} \\
+\mathbf{C}_m &= \mathbf{C}\mathbf{V} = \begin{pmatrix} 1 & 0 \end{pmatrix} \begin{pmatrix} 1 & 1 \\ 0 & -2 \end{pmatrix} = \begin{pmatrix} 1 & 1 \end{pmatrix}
+\end{align*}
+
+The transfer function $G(s)$ is the sum of the individual decoupled first-order systems:
+\begin{align*}
+G(s) &= \mathbf{C}_m(s\mathbf{I} - \mathbf{\Lambda})^{-1}\mathbf{B}_m \\
+&= \begin{pmatrix} 1 & 1 \end{pmatrix} \begin{pmatrix} \frac{1}{s} & 0 \\ 0 & \frac{1}{s+2} \end{pmatrix} \begin{pmatrix} 0.5 \\ -0.5 \end{pmatrix} \\
+&= \frac{0.5}{s} - \frac{0.5}{s+2} \\
+&= \frac{0.5(s+2) - 0.5s}{s(s+2)} = \frac{1}{s(s+2)}
+\end{align*}
+\textbf{Conclusion for Part (a):} The correct option is \textbf{iv) $\frac{1}{s(s+2)}$}.
+
+
+\section{Part B: Steady-State Error via Closed-Loop DC Gain}
+
+In signal processing terms, analyzing the steady-state error for a step input is equivalent to evaluating the DC Gain (frequency response at $\omega = 0$) of the closed-loop system.
+
+We define the closed-loop state matrix under unity negative feedback as $\mathbf{A}_{cl} = \mathbf{A} - \mathbf{B}\mathbf{C}$:
+\begin{align*}
+\mathbf{A}_{cl} &= \begin{pmatrix} 0 & 1 \\ 0 & -2 \end{pmatrix} - \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ -1 & -2 \end{pmatrix}
+\end{align*}
+
+The closed-loop transfer function $H(s) = \frac{Y(s)}{R(s)}$ in state-space form is evaluated directly at $s = 0$ to find the DC gain $H(0)$:
+\begin{align*}
+H(0) &= -\mathbf{C}\mathbf{A}_{cl}^{-1}\mathbf{B}
+\end{align*}
+
+First, compute the inverse of the closed-loop matrix:
+\begin{align*}
+\mathbf{A}_{cl}^{-1} &= \frac{1}{(0)(-2) - (1)(-1)} \begin{pmatrix} -2 & -1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} -2 & -1 \\ 1 & 0 \end{pmatrix}
+\end{align*}
+
+Now, evaluate the DC Gain:
+\begin{align*}
+H(0) &= -\begin{pmatrix} 1 & 0 \end{pmatrix} \begin{pmatrix} -2 & -1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} \\
+&= -\begin{pmatrix} -2 & -1 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} = -(-1) = 1
+\end{align*}
+
+Since the closed-loop DC gain is exactly $1$, the system perfectly scales a DC input ($r(t) = 1$) to an identical DC output ($y(t) = 1$). 
+The error is $e_{ss} = 1 - H(0) = 0$. 
+
+\textbf{Conclusion for Part (b):} The correct option is \textbf{i) $0$}.
+
+
+\section{Part C: Exact Discretization via Cayley-Hamilton Theorem (ZOH Equivalent)}
+
+To map the analog system to the discrete domain exactly, we use a Zero-Order Hold (ZOH) discretization. This allows us to advance the state vector perfectly over a sample time $T_s$. The exact difference equation is:
+\begin{align*}
+\mathbf{x}[k+1] &= \mathbf{\Phi}_d \mathbf{x}[k] + \mathbf{\Gamma}_d r[k]
+\end{align*}
+Where the discrete state transition matrix is the matrix exponential $\mathbf{\Phi}_d = e^{\mathbf{A}_{cl}T_s}$. 
+
+\subsection{Applying the Cayley-Hamilton Theorem}
+The Cayley-Hamilton theorem states that a matrix satisfies its own characteristic equation. First, find the eigenvalues of the closed-loop matrix $\mathbf{A}_{cl}$:
+\begin{align*}
+\det(\lambda\mathbf{I} - \mathbf{A}_{cl}) &= \lambda^2 + 2\lambda + 1 = (\lambda + 1)^2 = 0
+\end{align*}
+We have a repeated eigenvalue at $\lambda = -1$ (critically damped system).
+
+For a $2 \times 2$ matrix with a repeated eigenvalue $\lambda$, the matrix exponential is given exactly by:
+\begin{align*}
+e^{\mathbf{A}_{cl}t} &= e^{\lambda t} \left( \mathbf{I} + (\mathbf{A}_{cl} - \lambda\mathbf{I})t \right)
+\end{align*}
+
+Substituting $\lambda = -1$ and $t = T_s$:
+\begin{align*}
+\mathbf{\Phi}_d &= e^{-T_s} \left[ \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} + \left( \begin{pmatrix} 0 & 1 \\ -1 & -2 \end{pmatrix} - \begin{pmatrix} -1 & 0 \\ 0 & -1 \end{pmatrix} \right) T_s \right] \\
+\mathbf{\Phi}_d &= e^{-T_s} \left[ \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} + \begin{pmatrix} 1 & 1 \\ -1 & -1 \end{pmatrix} T_s \right] = e^{-T_s} \begin{pmatrix} 1+T_s & T_s \\ -T_s & 1-T_s \end{pmatrix}
+\end{align*}
+
+The discrete input matrix $\mathbf{\Gamma}_d$ is found by integrating the state transition matrix:
+\begin{align*}
+\mathbf{\Gamma}_d &= \left( \int_0^{T_s} e^{\mathbf{A}_{cl}\tau} d\tau \right) \mathbf{B} = (\mathbf{A}_{cl})^{-1} (\mathbf{\Phi}_d - \mathbf{I}) \mathbf{B}
+\end{align*}
+
+By mapping the analog system to this exact discrete equivalent ($\mathbf{\Phi}_d, \mathbf{\Gamma}_d, \mathbf{C}, \mathbf{D}$), an Infinite Impulse Response (IIR) filter formulation is created. Running this equation recursively perfectly simulates the closed-loop system's step response without truncation errors.
+
+\end{document}
